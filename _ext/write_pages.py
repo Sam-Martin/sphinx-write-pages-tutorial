@@ -1,10 +1,10 @@
-import os
 import pathlib
-from sphinx.parsers import RSTParser
+
 from docutils.frontend import OptionParser
-from sphinx.util.docutils import SphinxDirective
-from sphinx.domains import Domain
 from docutils.utils import new_document
+from sphinx.application import Sphinx
+from sphinx.parsers import RSTParser
+from sphinx.util.docutils import SphinxDirective
 
 
 class WritePages:
@@ -45,7 +45,7 @@ class ListPagesDirective(SphinxDirective):
         return document.children
 
 
-def main(*_):
+def main(app: Sphinx):
     w = WritePages()
     w.write_pages()
 
