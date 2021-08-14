@@ -1,6 +1,8 @@
 import pathlib
+from typing import List
 
 from docutils.frontend import OptionParser
+from docutils.nodes import Node
 from docutils.utils import new_document
 from sphinx.application import Sphinx
 from sphinx.parsers import RSTParser
@@ -11,7 +13,7 @@ class WritePages:
     files = [f"file_{i}" for i in range(1, 10)]
     relative_path = pathlib.Path(__file__).parent.absolute() / ".."
 
-    def write_pages(self):
+    def write_pages(self) -> None:
         for file_name in self.files:
             with open(self.relative_path / f"{file_name}.rst", "w") as f:
                 f.write(f"Test - {file_name}\n==============")
@@ -20,18 +22,18 @@ class WritePages:
 class ListPagesDirective(SphinxDirective):
     has_content = True
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.pages = WritePages()
 
-    def run(self) -> list:
+    def run(self) -> List[Node]:
         rst = ".. toctree::\n"
         rst += "   :maxdepth: 2\n\n"
         for file_name in self.pages.files:
             rst += f"   {file_name}\n"
         return self.parse_rst(rst)
 
-    def parse_rst(self, text):
+    def parse_rst(self, text: str) -> List[Node]:
         parser = RSTParser()
         parser.set_application(self.env.app)
 
@@ -45,11 +47,11 @@ class ListPagesDirective(SphinxDirective):
         return document.children
 
 
-def main(app: Sphinx):
+def main(app: Sphinx) -> None:
     w = WritePages()
     w.write_pages()
 
 
-def setup(app: object) -> dict:
+def setup(app: Sphinx) -> None:
     app.add_directive("list-pages", ListPagesDirective)
     app.connect("builder-inited", main)
